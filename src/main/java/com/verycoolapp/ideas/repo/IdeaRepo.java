@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface IdeaRepo extends MongoRepository<Ideas, Long> {
+@Repository
+public interface IdeaRepo extends MongoRepository<Ideas, String> {
     Optional<Ideas> findByIdeaId(String ideaId);
 
     void deleteByIdeaId(String ideaId);

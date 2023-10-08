@@ -12,7 +12,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,14 +47,14 @@ public class IdeaService {
         log.info("Idea Already present with id: {}, updating existing record...", ideasDto.getIdeaId());
         ideasDto.setId(_ideas.getId());
         ideasDto.setIdeaId(_ideas.getIdeaId());
-        ideasDto.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        ideasDto.setUpdatedAt(new Date(System.currentTimeMillis()));
         return ideaRepo.save(modelMapper.map(ideasDto, Ideas.class));
     }
 
     private Ideas saveNewIdea(IdeasDto ideasDto) {
         log.info("Adding new Idea....");
         ideasDto.setIdeaId(UUID.randomUUID().toString());
-        ideasDto.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        ideasDto.setCreatedAt(new Date(System.currentTimeMillis()));
         return ideaRepo.save(modelMapper.map(ideasDto, Ideas.class));
     }
 
@@ -86,16 +86,16 @@ public class IdeaService {
         }
         return Optional.of(response);
     }
-    
+
     public Optional<Response> deleteByIdeaId(String ideaId) {
         Response response;
-        try {
-            log.info("Delete idea using Id: {}", ideaId);
-            ideaRepo.deleteByIdeaId(ideaId);
-            response = responseUtil.generateSuccessResponse(null);
-        } catch (Exception er) {
-            log.info("Exception while deleting idea: {}", er.getMessage());
-            response = responseUtil.generateFailureResponse("Failed to delete idea with ID: " + ideaId);
+        log.info("Delete idea using Id: {}", ideaId);
+        Optional<Ideas> _idea = ideaRepo.findByIdeaId(ideaId);
+        if (_idea.isPresent()) {
+            ideaRepo.deleteById(_idea.get().getId());
+            response = responseUtil.generateSuccessResponse("Deleted");
+        } else {
+            response = responseUtil.generateFailureResponse("Failed to delete idea with ID: " + ideaId + " not found");
         }
         return Optional.of(response);
     }

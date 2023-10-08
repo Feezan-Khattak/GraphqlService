@@ -11,4 +11,8 @@ public class IdeasDto extends BaseDto {
     private String ideaId;
     private String name;
     private String description;
+    private String tag;
+    private String image;
+    private String comment;
+    private Long likes;
 }
